@@ -1,0 +1,45 @@
+1. Core Idea
+
+A personal AI interior-stylist agent that helps users upgrade small spaces in their home with aesthetic, trendy, and budget-friendly designs — without hiring a designer or doing a full renovation.
+The agent uses vision AI + generative design + shopping recommendations to deliver instant, actionable micro-makeovers.
+2. Target User's painpoints
+  Don't have ideas and too many scrolling for upgrade
+  See how things look before buying
+  Instant shopping list and tight budget
+3.  Key AI Superpowers
+① Vision Understanding
+Upload a photo → agent identifies the space:
+Style, colors, lighting
+Existing objects
+Unused potential
+
+② LLM for chatting with users get what they want
+feed 3-5 styles if they don't have ideas
+  
+③ Budget-Aware Shopping Plan
+User sets a budget:
+$30 / $50 / $100 / $200
+AI finds items on Amazon, Ikea, Target, Wayfair, Etsy
+Calculates total cost
+
+④ Spatial Arrangement To-do list
+
+Agent gives step-by-step:
+“Replace candle with taller vase”
+“Add LED strip behind the counter”
+“Use layered textiles for look X”
+“Place plant on right side for balance”
+
+⑤ Before → After Simulation
+
+AI generates:
+Virtual mockups with realistic look
+Tap to switch between different aesthetics
+
+4. business model
+user subscription + merchant affliate revenues
+
+5. User jouney 
+User took a picture/ update picture --> chat with ai anystyle she want/ select image from several preset options --> ai give what it will look like after --> shopping list --> one click to buy -->to do list to change
+                                                                                                                                                     |          |
+                                                                                                                                                     |--------- |--> reset budget
