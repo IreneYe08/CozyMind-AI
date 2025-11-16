@@ -1,6 +1,7 @@
 # CozyMind-AI
 
 AI-powered room design assistance - MVP
+Demo: https://drive.google.com/file/d/1G1Pu2tLAqefuAeCiwQ34zT8PBcBkpZEg/view
 
 ## 🚀 Features
 
