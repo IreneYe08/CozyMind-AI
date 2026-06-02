@@ -1,167 +1,142 @@
-# CozyMind-AI
+# 🏡 CozyMind-AI
 
-AI-powered room design assistance - MVP
-Demo: https://drive.google.com/file/d/1G1Pu2tLAqefuAeCiwQ34zT8PBcBkpZEg/view
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20Storage-green?style=flat-square&logo=supabase)](https://supabase.com/)
+[![Replicate AI](https://img.shields.io/badge/Replicate%20AI-Realistic%20Vision%20v5-orange?style=flat-square&logo=replicate)](https://replicate.com/)
 
-## 🚀 Features
+An AI-powered, mobile-first room design companion that transforms messy, empty, or outdated spaces into beautifully curated, shoppable designs in seconds.
 
-- Upload room photos and generate AI-powered "after" designs
-- Customize designs with prompts, style tags, budget, and size preferences
-- Get Amazon product recommendations for your design
-- Save designs to your personal gallery
-- Responsive mobile-first UI
+**🎥 View Live Demo:** [CozyMind-AI Demo Video](https://drive.google.com/file/d/1G1Pu2tLAqefuAeCiwQ34zT8PBcBkpZEg/view)
 
-## 📋 Prerequisites
+---
 
-- Node.js 18+ and npm/yarn
-- Supabase account (for authentication and storage)
+## 🎯 Product Vision & JTBD
 
-## 🛠️ Setup Instructions
+### The Problem
+Traditional interior design is a high-friction, high-cost experience. Homeowners and renters face significant barriers:
+- **High Designer Fees:** Hiring an interior designer often costs between $100 to $500 per hour.
+- **Steep Learning Curve:** Professional 3D rendering software (like SketchUp or AutoCAD) is too complex for casual users.
+- **The "Inspiration-to-Acquisition" Gap:** Seeing a beautiful mood board is inspiring, but finding and purchasing the actual furniture shown is tedious and time-consuming.
 
-### 1. Install Dependencies
+### Jobs-to-be-Done (JTBD)
+> **When I am** redecorating or moving into a new room,  
+> **I want to** instantly visualize professional design styles applied to my physical space and find shoppable matching products,  
+> **So that I can** confidently make purchase decisions and bring my dream room to life within my budget.
 
+---
+
+## 🚀 Key Features
+
+*   **⚡ Aha-Moment Initial Preview:** Upload a "before" photo and instantly see a high-fidelity redesigned version in less than 15 seconds.
+*   **🎨 Granular Style Customization:** Tailor the AI model using customized prompts, layout style tags (e.g., *Japandi, Mid-Century Modern, Industrial, Minimalist*), budget tiers, and room size parameters.
+*   **🛒 E-Commerce Integration (Shoppable AI):** Generates structural designs alongside curated Amazon product recommendations, closing the loop from inspiration to immediate purchase.
+*   **📁 Personal Gallery & Authentication:** A secure Supabase Auth and Database layer allows users to persist their design records, catalog item details, and revisit their historical layout galleries.
+*   **📱 Flawless Responsive UI:** Built with a mobile-first philosophy, adapting smoothly from narrow handheld screens to high-definition desktop views.
+
+---
+
+## 🗺️ Product Architecture & Data Flow
+
+CozyMind-AI integrates Supabase, Replicate AI, and Next.js App Router API endpoints to deliver a fast, stateful user experience.
+
+```
++------------------+         Upload Photo         +--------------------------+
+|                  | ---------------------------> |   Supabase Buckets       |
+|   User Client    |                              |   (before / after S3)    |
+|   (Next.js Web)  | <--------------------------- +--------------------------+
+|                  |        Image CDN URLs
++------------------+
+   |          ^
+   | POST     | Response: Final Image URL + Amazon Items
+   v          |
++----------------------------------------------------------------------------+
+|                       Next.js App Router (Backend APIs)                     |
+|                                                                            |
+|   +--------------------+       Generate Image       +------------------+   |
+|   | /generateInitial   | -------------------------> |   Replicate AI   |   |
+|   |                    | <------------------------- |   (Realistic     |   |
+|   +--------------------+     Output Design Image    |    Vision v5)    |   |
+|                                                     +------------------+   |
+|   +--------------------+       Match Products                              |   |
+|   | /generateAfterPro- | -------------------------> [ Future: Amazon ]     |   |
+|   |  ductList          |                            [ Product API   ]     |   |
+|   +--------------------+                                                   |   |
++----------------------------------------------------------------------------+
+```
+
+### User Flow
+1.  **Upload (`/upload`):** User takes/uploads a "before" photo (stored securely in Supabase `before` bucket).
+2.  **Preview (`/preview`):** Instant triggers `/api/generateInitialAfter` to showcase the immediate AI transformation.
+3.  **Customize (`/customize`):** Users fine-tune the parameters (style tag, prompt, budget tier, and size).
+4.  **Final (`/final/[id]`):** Calls `/api/generateAfterProductList` to generate the personalized design along with a curated Amazon Product List.
+5.  **Save (`/save`):** Persists the complete result package into the Supabase database.
+6.  **Login (`/login`):** Streamlined user authentication.
+7.  **Gallery (`/gallery`):** Fetches historical designs specific to the authenticated `user_id`.
+
+---
+
+## 🛠️ Tech Stack & Dependencies
+
+- **Frontend:** Next.js 14 (App Router), React, Tailwind CSS, Lucide Icons, TypeScript
+- **Backend / BaaS:** Supabase (Auth, S3-compatible Storage, PostgreSQL Database)
+- **AI Inference:** Replicate API running `lucataco/realistic-vision-v5` for spatial-preserving Image-to-Image generation
+- **E-Commerce Simulation:** Mocked Amazon Product Advertising API matching generated furniture tags to real product entries
+
+---
+
+## ⚙️ Setup & Installation
+
+### 1. Clone & Install
 ```bash
+git clone https://github.com/IreneYe08/CozyMind-AI.git
+cd CozyMind-AI
 npm install
 ```
 
-### 2. Set Up Supabase
+### 2. Configure Supabase Backend
+1. Create a free project at [Supabase](https://supabase.com).
+2. Execute the schema script located in `supabase/schema.sql` inside the Supabase SQL Editor.
+3. Create two public Storage buckets:
+   - `before` (For raw upload photos)
+   - `after` (For AI-generated design results)
 
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to SQL Editor and run the schema from `supabase/schema.sql`
-3. Go to Storage and create two public buckets:
-   - `before` (for before images)
-   - `after` (for after images)
-
-### 3. Configure Environment Variables
-
-Create a `.env.local` file in the root directory:
-
+### 3. Environment Variables
+Create a `.env.local` file in your root folder:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+REPLICATE_API_TOKEN=your_replicate_api_token
 ```
 
-You can find these values in your Supabase project settings under API.
-
-### 4. Run Development Server
-
+### 4. Run Locally
 ```bash
 npm run dev
 ```
+Navigate to [http://localhost:3000](http://localhost:3000) to view the application.
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+---
 
-## 📁 Project Structure
+## 🧠 PM Perspective: Core Product Decisions & Tradeoffs
 
-```
-CozyMind-AI/
-├── app/
-│   ├── api/
-│   │   ├── generateInitialAfter/    # Generate initial "after" image
-│   │   ├── generateAfterProductList/ # Generate final image + products
-│   │   ├── getResult/                # Get single result by ID
-│   │   ├── getResults/               # Get all results for user
-│   │   ├── saveResult/               # Save result to database
-│   │   └── upload/                   # Upload image to Supabase
-│   ├── customize/                    # Customize design page
-│   ├── final/[id]/                   # Final result page
-│   ├── gallery/                      # User gallery page
-│   ├── login/                        # Login/signup page
-│   ├── preview/                      # Aha moment preview
-│   ├── save/                         # Save confirmation page
-│   ├── upload/                       # Upload page
-│   ├── globals.css                   # Global styles
-│   ├── layout.tsx                    # Root layout
-│   └── page.tsx                      # Home (redirects to /upload)
-├── components/
-│   ├── ImageCard.tsx                 # Image display component
-│   ├── InputSection.tsx              # Form section wrapper
-│   ├── LoadingSpinner.tsx            # Loading indicator
-│   ├── ProductCard.tsx               # Amazon product card
-│   ├── SectionTitle.tsx              # Section heading
-│   ├── StyleTagSelector.tsx          # Style tag picker
-│   └── UploadBox.tsx                 # Drag-and-drop upload
-├── lib/
-│   └── supabaseClient.ts             # Supabase client setup
-├── supabase/
-│   └── schema.sql                    # Database schema
-├── types/
-│   └── database.ts                   # TypeScript types
-├── .env.example                      # Environment variables template
-├── next.config.js                    # Next.js configuration
-├── package.json                      # Dependencies
-├── tailwind.config.ts                # Tailwind CSS configuration
-└── tsconfig.json                     # TypeScript configuration
-```
+During development, several engineering-to-product trade-offs were made to guarantee an optimal user experience:
 
-## 🔄 User Flow
+*   **Spatial Consistency vs. Creativity (The 0.35 Strength Sweet Spot):**  
+    Using AI to redesign rooms often leads to "hallucinated" layouts (e.g., doors disappearing, windows moving). By utilizing Replicate's Image-to-Image pipeline and setting the `strength` to exactly `0.35` and `guidance_scale` to `3`, we ensure the core room geometry (walls, window placements, doors) remains structurally unchanged, while replacing only the aesthetic elements (furniture, paint, decoration).
+*   **Aha-Moment Retention Strategy:**  
+    Rather than forcing users to fill out complex forms upfront, we adopted an "upload-first, configure-later" model. The user uploads a photo and is immediately met with a gorgeous AI-redesign "Aha-moment" within seconds, drastically increasing signup and customization conversion rates.
 
-1. **Upload** (`/upload`)` - User uploads a "before" photo
-2. **Preview** (`/preview`) - Shows initial AI-generated "after" image
-3. **Customize** (`/customize`) - User adds prompt, style tags, budget, size
-4. **Final** (`/final/[id]`) - Shows final design + Amazon product list
-5. **Save** (`/save`) - Confirmation page after saving
-6. **Login** (`/login`) - Authentication (required for gallery)
-7. **Gallery** (`/gallery`) - View all saved designs
+---
 
-## 🔌 API Routes
+## 🔮 Future Product Roadmap
 
-### POST `/api/upload`
-Uploads an image to Supabase storage.
+- [ ] **Live AI Inpainting:** Allow users to brush over specific furniture items (e.g., "just replace the sofa") instead of redesigning the whole room.
+- [ ] **Amazon Product Advertising API Integration:** Connect mock items with live, region-specific Amazon products with real-time pricing and stock data.
+- [ ] **HD Upscaling:** Integrate GFPGAN / RealESRGAN pipelines via Replicate to generate photo-realistic 4K design outputs.
+- [ ] **Interactive Budget Allocator:** A slider letting users dynamically adjust furniture pricing tiers and instantly recalculate the total cost of the room.
 
-**Request:** FormData with `file` field  
-**Response:** `{ url: string }`
-
-### POST `/api/generateInitialAfter`
-Generates initial "after" image (placeholder - replace with real AI API).
-
-**Request:** `{ before_image_url: string }`  
-**Response:** `{ after_image_url: string }`
-
-### POST `/api/generateAfterProductList`
-Generates final "after" image + Amazon product list (placeholder - replace with real APIs).
-
-**Request:** `{ before_image_url, prompt, style, budget?, size? }`  
-**Response:** `{ final_after_image_url: string, amazon_items: AmazonItem[] }`
-
-### POST `/api/saveResult`
-Saves a result to the database.
-
-**Request:** `{ before_image, after_image, prompt, style, budget?, size?, items? }`  
-**Response:** `{ id: string }`
-
-### GET `/api/getResults?user_id=xxx`
-Gets all results for a user.
-
-**Response:** `ResultRecord[]`
-
-### GET `/api/getResult?id=xxx`
-Gets a single result by ID.
-
-**Response:** `ResultRecord`
-
-## 🎨 Responsive Design
-
-All pages are built with mobile-first responsive design:
-- **Mobile:** Vertical stacking, full-width components
-- **Tablet (md):** 2-column layouts where appropriate
-- **Desktop (lg):** Side-by-side layouts, multi-column grids
-
-## 🔐 Authentication
-
-Uses Supabase Auth with email/password. Users must be logged in to:
-- Save results
-- View gallery
-
-## 📝 TODO
-
-- [ ] Replace placeholder AI image generation with real API
-- [ ] Integrate Amazon Product Advertising API
-- [ ] Add image optimization
-- [ ] Add error boundaries
-- [ ] Add loading states for better UX
-- [ ] Add image editing capabilities
+---
 
 ## 📄 License
-
-See LICENSE file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
